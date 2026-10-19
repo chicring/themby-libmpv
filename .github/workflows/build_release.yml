@@ -6,6 +6,11 @@ on:
       - '*'
 
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Library version to publish (e.g. 0.2.0-themby.1)'
+        required: true
+        default: '0.2.0-themby.1'
 
 jobs:
   build:
@@ -47,3 +52,22 @@ jobs:
           name: themby-libmpv-aar
           path: lib/build/outputs/aar/*.aar
           if-no-files-found: error
+
+      - name: Publish Maven repo to gh-pages
+        env:
+          LIB_VERSION: ${{ inputs.version }}
+        run: |
+          set -ex
+          ./gradlew :lib:publishToMavenLocal -PlibVersion="$LIB_VERSION"
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null; then
+            git fetch origin gh-pages
+            git worktree add -B gh-pages /tmp/pages FETCH_HEAD
+          else
+            git worktree add --orphan -b gh-pages /tmp/pages
+          fi
+          mkdir -p /tmp/pages/io/github/chicring
+          cp -r ~/.m2/repository/io/github/chicring/themby-libmpv /tmp/pages/io/github/chicring/
+          cd /tmp/pages
+          git add -A
+          git -c user.name=github-actions -c user.email=actions@github.com commit -m "publish themby-libmpv $LIB_VERSION" || true
+          git push origin gh-pages

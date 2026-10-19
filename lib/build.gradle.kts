@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -10,8 +9,8 @@ plugins {
 val abiCodes = mapOf("armeabi-v7a" to 1, "arm64-v8a" to 2, "x86" to 3, "x86_64" to 4)
 val universalBase = 8000
 
-version = "0.1.12"
-group = "io.github.abdallahmehiz"
+version = (findProperty("libVersion") as String?) ?: "0.2.0-themby.1"
+group = "io.github.chicring"
 
 android {
     namespace = "is.xyz.mpv"
@@ -42,18 +41,16 @@ tasks.register<Jar>("sourceJar") {
 }
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-    signAllPublications()
     coordinates(
         group.toString(),
-        "mpv-android-lib",
+        "themby-libmpv",
         version.toString()
     )
     pom {
-        name.set("mpv Android library")
-        description.set("The mpv library used by mpvKt.")
+        name.set("Themby libmpv")
+        description.set("libmpv Android library for Themby (fork of abdallahmehiz/mpv-android).")
         inceptionYear.set("2024")
-        url.set("https://github.com/abdallahmehiz/mpv-android/")
+        url.set("https://github.com/chicring/themby-libmpv/")
         licenses {
             license {
                 name.set("MIT License")
@@ -69,9 +66,9 @@ mavenPublishing {
             }
         }
         scm {
-            url.set("https://github.com/abdallahmehiz/mpv-android/")
-            connection.set("scm:git:git://github.com/abdallahmehiz/mpv-android.git")
-            developerConnection.set("scm:git:ssh://git@github.com/abdallahmehiz/mpv-android.git")
+            url.set("https://github.com/chicring/themby-libmpv/")
+            connection.set("scm:git:git://github.com/chicring/themby-libmpv.git")
+            developerConnection.set("scm:git:ssh://git@github.com/chicring/themby-libmpv.git")
         }
     }
 }
