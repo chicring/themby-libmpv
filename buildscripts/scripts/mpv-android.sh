@@ -42,6 +42,9 @@ $BUILD/scripts/write_versions.sh $ndk_suffix
 PREFIX32=$prefix32 PREFIX64=$prefix64 PREFIX_X64=$prefix_x64 PREFIX_X86=$prefix_x86 \
 ndk-build -C app/src/main -j$cores
 
+# ndk-build copies libc++_shared.so from the NDK unstripped (~9MB per ABI vs ~1.3MB stripped)
+find app/src/main/libs -name '*.so' -exec llvm-strip --strip-unneeded {} +
+
 targets=(assembleDebug)
 if [ -z "$DONT_BUILD_RELEASE" ]; then
 	targets+=(assembleRelease)
