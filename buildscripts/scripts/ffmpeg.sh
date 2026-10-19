@@ -11,6 +11,24 @@ else
 	exit 255
 fi
 
+# Local patches (Dolby Vision RPU passthrough in the mediacodec wrapper
+# — what makes single-layer DV P5/P8 reshape work with HW decode).
+# Idempotent: a patch already present in the tree is skipped; a patch
+# that no longer applies aborts the build loudly so we notice upstream
+# drift instead of silently shipping without it.
+for p in ../../patches/ffmpeg/*.patch; do
+	[ -e "$p" ] || continue
+	if git apply --reverse --check "$p" 2>/dev/null; then
+		echo "ffmpeg patch already applied: $(basename "$p")"
+	elif git apply --check "$p" 2>/dev/null; then
+		echo "applying ffmpeg patch: $(basename "$p")"
+		git apply "$p"
+	else
+		echo "ERROR: ffmpeg patch does not apply: $(basename "$p")" >&2
+		exit 1
+	fi
+done
+
 mkdir -p _build$ndk_suffix
 cd _build$ndk_suffix
 
@@ -34,10 +52,13 @@ args=(
 	# disable unneeded parts
 	--disable-{stripping,doc,programs}
 	# to keep the build lean we disable some feature quite aggressively:
+	# - muxers, encoders: mpv-android does not have any way to use these
 	# - devices: no practical use on Android
-	--disable-{encoders,devices}
+	--disable-{muxers,encoders,devices}
 	# useful to taking screenshots
 	--enable-encoder=mjpeg,png
+	# useful for the `dump-cache` command
+	--enable-muxer=mov,matroska,mpegts
 )
 ../configure "${args[@]}"
 

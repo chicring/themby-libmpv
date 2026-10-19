@@ -1,20 +1,20 @@
 name: Build AAR
 
 on:
-  push:
-    tags:
-      - '*'
-
   workflow_dispatch:
     inputs:
       version:
-        description: 'Library version to publish (e.g. 0.2.0-themby.1)'
+        description: 'Library version to publish (e.g. 0.3.0-themby.1)'
         required: true
-        default: '0.2.0-themby.1'
+        default: '0.3.0-themby.1'
+      publish:
+        description: 'Publish Maven repo to gh-pages'
+        type: boolean
+        default: true
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: write
@@ -26,26 +26,42 @@ jobs:
           java-version: '17'
           distribution: temurin
 
-      - name: Export env vars
-        run: buildscripts/include/ci.sh export >>$GITHUB_ENV
-
-      - name: Install deps
+      - name: Install pinned host tools
+        shell: bash
         run: |
+          set -euo pipefail
           sudo apt-get update
-          sudo apt-get install autoconf pkg-config libtool ninja-build python3-pip
-          sudo pip3 install meson
+          sudo apt-get install --yes autoconf gperf libssl-dev libtool ninja-build pkgconf python3-pip
+          source buildscripts/include/depinfo.sh
+          rustup toolchain install "$v_rust" --profile minimal --no-self-update
+          rustup default "$v_rust"
+          cargo install cargo-c --version "$v_cargo_c" --locked
+          python3 -m pip install --user --break-system-packages "meson==$v_meson"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Build the release artifacts
+      - name: Build native libraries and AAR
         run: |
           set -x
           unset ANDROID_SDK_ROOT
           cd buildscripts
-          ./download.sh > /dev/null
+          IN_CI=1 ./download.sh > /dev/null
           ./buildall.sh --arch x86_64 mpv
           ./buildall.sh --arch arm64 mpv
-          ./buildall.sh
+          ./buildall.sh --arch armv7l mpv
+          ./buildall.sh -n mpv-android
         env:
           GRADLE_OPTS: -Xmx4G
+
+      - name: Inspect artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p aar-inspect && unzip -q -o lib/build/outputs/aar/lib-release.aar -d aar-inspect
+          ls -l aar-inspect/jni/*/
+          for abi in arm64-v8a armeabi-v7a x86_64; do
+            strings aar-inspect/jni/$abi/libmpv.so | grep -qx 'dovi_parse_rpu' || { echo "no libdovi in $abi"; exit 1; }
+          done
+
       - name: Upload AAR
         uses: actions/upload-artifact@v4
         with:
@@ -54,6 +70,7 @@ jobs:
           if-no-files-found: error
 
       - name: Publish Maven repo to gh-pages
+        if: ${{ inputs.publish }}
         env:
           LIB_VERSION: ${{ inputs.version }}
         run: |

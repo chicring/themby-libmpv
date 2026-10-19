@@ -28,14 +28,8 @@ fetch_prefix() {
 build_prefix() {
 	msg "Building the prefix ($ci_tarball)..."
 
-	msg "Fetching deps"
-	IN_CI=1 ./include/download-deps.sh
-
-	# build everything mpv depends on (but not mpv itself)
-	for x in ${dep_mpv[@]}; do
-		msg "Building $x"
-		./buildall.sh $x
-	done
+	msg "Compiling"
+	./buildall.sh --arch arm64 --only-deps mpv
 
 	if [[ "$CACHE_MODE" == folder && -w "$CACHE_FOLDER" ]]; then
 		msg "Compressing the prefix"
@@ -48,7 +42,8 @@ export WGET="wget --progress=bar:force"
 
 if [ "$1" = "export" ]; then
 	# export variable with unique cache identifier
-	echo "CACHE_IDENTIFIER=$ci_tarball"
+	cache_hash=$(printf '%s' "$ci_tarball" | sha256sum | cut -d' ' -f1)
+	echo "CACHE_IDENTIFIER=arm64-$cache_hash"
 	exit 0
 elif [ "$1" = "install" ]; then
 	# install deps
@@ -61,11 +56,8 @@ elif [ "$1" = "install" ]; then
 	msg "Fetching SDK + NDK"
 	IN_CI=1 ./include/download-sdk.sh
 
-	msg "Fetching mpv"
-	mkdir -p deps/mpv
-	$WGET https://github.com/mpv-player/mpv/archive/master.tar.gz -O master.tgz
-	tar -xzf master.tgz -C deps/mpv --strip-components=1
-	rm master.tgz
+	msg "Fetching pinned source dependencies"
+	IN_CI=1 ./include/download-deps.sh
 
 	msg "Trying to fetch existing prefix"
 	mkdir -p prefix
@@ -79,13 +71,19 @@ else
 fi
 
 msg "Building mpv"
-./buildall.sh -n mpv || {
+./buildall.sh --arch arm64 -n mpv || {
 	# show logfile if configure failed
-	[ ! -f deps/mpv/_build/config.h ] && cat deps/mpv/_build/meson-logs/meson-log.txt
+	[ ! -f deps/mpv/_build_arm64/config.h ] && \
+		cat deps/mpv/_build_arm64/meson-logs/meson-log.txt
 	exit 1
 }
 
 msg "Building mpv-android"
-./buildall.sh -n
+./buildall.sh --arch arm64 -n
+
+msg "Checking Nuvio-compatible AAR API"
+env -u ANDROID_SDK_ROOT ANDROID_HOME="$PWD/sdk/android-sdk-linux" \
+	../gradlew -p .. \
+	:compatcheck:compileDebugKotlin --no-daemon
 
 exit 0
