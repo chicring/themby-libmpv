@@ -31,7 +31,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install --yes autoconf gperf libssl-dev libtool ninja-build pkgconf python3-pip
+          sudo apt-get install --yes autoconf gperf libssl-dev libtool nasm ninja-build pkgconf python3-pip
           source buildscripts/include/depinfo.sh
           rustup toolchain install "$v_rust" --profile minimal --no-self-update
           rustup default "$v_rust"
@@ -45,7 +45,6 @@ jobs:
           unset ANDROID_SDK_ROOT
           cd buildscripts
           IN_CI=1 ./download.sh > /dev/null
-          ./buildall.sh --arch x86_64 mpv
           ./buildall.sh --arch arm64 mpv
           ./buildall.sh --arch armv7l mpv
           ./buildall.sh -n mpv-android
@@ -58,7 +57,7 @@ jobs:
           set -euo pipefail
           mkdir -p aar-inspect && unzip -q -o lib/build/outputs/aar/lib-release.aar -d aar-inspect
           ls -l aar-inspect/jni/*/
-          for abi in arm64-v8a armeabi-v7a x86_64; do
+          for abi in arm64-v8a armeabi-v7a; do
             strings aar-inspect/jni/$abi/libmpv.so | grep -qx 'dovi_parse_rpu' || { echo "no libdovi in $abi"; exit 1; }
           done
 
