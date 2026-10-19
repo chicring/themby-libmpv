@@ -1,0 +1,123 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.github.chicring",
+    "module": "themby-libmpv",
+    "version": "0.2.0-themby.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.3.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseVariantReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "themby-libmpv-0.2.0-themby.1.aar",
+          "url": "themby-libmpv-0.2.0-themby.1.aar",
+          "size": 46635027,
+          "sha512": "bd1fd2f6e98397ea9d9e950be53bfc5194e53a4e14d03417c7467f2cf7352fd325034dc1029d6e0d642b76815e91bfc5ecd2edf96e7d39c5387aca5a65aa18fd",
+          "sha256": "1872cd0f0fa489c02ef1dd8a929bc98a089e01c83a0b37263340183697d77b6f",
+          "sha1": "bd511cecf9d7c5bd177ba7e2d2a79a543ba30edc",
+          "md5": "c8ade80d68edf8858d81f658c621a8fe"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.appcompat",
+          "module": "appcompat",
+          "version": {
+            "requires": "1.7.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "themby-libmpv-0.2.0-themby.1.aar",
+          "url": "themby-libmpv-0.2.0-themby.1.aar",
+          "size": 46635027,
+          "sha512": "bd1fd2f6e98397ea9d9e950be53bfc5194e53a4e14d03417c7467f2cf7352fd325034dc1029d6e0d642b76815e91bfc5ecd2edf96e7d39c5387aca5a65aa18fd",
+          "sha256": "1872cd0f0fa489c02ef1dd8a929bc98a089e01c83a0b37263340183697d77b6f",
+          "sha1": "bd511cecf9d7c5bd177ba7e2d2a79a543ba30edc",
+          "md5": "c8ade80d68edf8858d81f658c621a8fe"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "themby-libmpv-0.2.0-themby.1-sources.jar",
+          "url": "themby-libmpv-0.2.0-themby.1-sources.jar",
+          "size": 11405,
+          "sha512": "17c65b31358f34dea8010d7b037e6d6617c2e37f4f0dd8e2229f2da16878b74a0b4fa26a60f7d490bfe3c70bb4322b9f453e168d99d17759a06c85fc6bc46fe6",
+          "sha256": "623e2835445aa56ffc937dab2be9061b4d48f8acd7773f0c80fba6f8a2ef40d3",
+          "sha1": "cfce3bb41d1cf327d6c2fbf146510ceeb354aa21",
+          "md5": "79f2f2826955a751d7a9d6ad3d0052e5"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseJavaDocPublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "themby-libmpv-0.2.0-themby.1-javadoc.jar",
+          "url": "themby-libmpv-0.2.0-themby.1-javadoc.jar",
+          "size": 408043,
+          "sha512": "839a887a272d0384d375937162377370035bd0256acf36c2bad5f0c4abe4291525852cf54ff06deaa4d31fd47501823f8194e6fbf5925815133c7e21b6195e39",
+          "sha256": "2ddf3b3c992d01af963c14d28084d7201fb75cd371b06fdd573fc67baaf84c7f",
+          "sha1": "9eb3d7820bac0108e25baa42071a5cfc0b9a7128",
+          "md5": "03743160bfe51e075b6b3eec2da0b8e7"
+        }
+      ]
+    }
+  ]
+}
